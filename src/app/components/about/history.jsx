@@ -1,12 +1,12 @@
 import React from 'react';
+import { MoveUpRight } from 'lucide-react';
+import Heading from '../heading';
 
 const History = () => {
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-8">
       {/* About Us Header */}
-      <div className="mb-8">
-        <h2 className="text-blue-600 text-lg">About Us</h2>
-      </div>
+      <Heading heading="About Us" route="/about" />
 
       {/* Main Content Container */}
       <div className="flex flex-col lg:flex-row gap-8">
@@ -26,7 +26,7 @@ const History = () => {
         </div>
 
         {/* Founded Card Section */}
-        <div className="flex-1 bg-blue-100 rounded-lg overflow-hidden">
+        <div className="flex-1 bg-[#EA9282] rounded-lg overflow-hidden">
           <div className="p-4">
             <h4 className="text-2xl font-bold mb-2">Founded in 1985</h4>
             <p className="flex items-center gap-2 mb-4">
@@ -52,9 +52,7 @@ const History = () => {
             {[1, 2, 3].map((item) => (
               <div key={item} className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
-                  <svg className="w-4 h-4 transform rotate-45" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M5 13l4 4L19 7"/>
-                  </svg>
+                <MoveUpRight  className='w-4 h-4'/>
                   <h4 className="text-lg font-semibold ">Lorem Ipsum</h4>
                 </div>
                 <p className="text-gray-700 text-xl">Lorem ipsum dolor sit amet, consectetur</p>

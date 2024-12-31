@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Image from "next/image"
+import Heading from "../heading"
 
 export default function Gallery() {
   return (
     <div className="container max-w-5xl mx-auto px-4 py-6 sm:py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 ">
         {/* Left Section */}
-        <div className="space-y-4 sm:space-y-8">
+        <div className="space-y-4 sm:space-y-8 mt-10">
           {/* Heading */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">
             Driving<br />growth together
@@ -77,10 +78,9 @@ export default function Gallery() {
         {/* Right Section - Gallery */}
         <div className="relative mt-4 sm:mt-0">
           <div className="absolute flex items-center gap-x-2 sm:gap-x-4 top-0 right-0 text-[#340FE0] font-medium text-xs sm:text-base">
-            <div className="w-6 sm:w-16 border-t-2 border-[#340FE0] mt-2 pointer-events-none"></div>
-            Gallery & Insights
+          <Heading heading={"Gallery and insights"} route={"/gallery"}/>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:gap-4 mt-8 sm:mt-12">
+          <div className="grid grid-cols-2 gap-2 sm:gap-4 mt-12 sm:mt-16">
             <Image
               src="/home/Rectangle 44.png"
               alt="Kitchen interior"

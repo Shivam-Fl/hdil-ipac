@@ -1,4 +1,5 @@
 import React from 'react';
+import Heading from '../heading';
 
 const LeadershipTeam = () => {
   const teamMembers = [
@@ -21,12 +22,9 @@ const LeadershipTeam = () => {
 
   return (
     <div className="w-full max-w-5xl mx-auto px-4 py-12">
-      {/* Section Header */}
-      <div className="mb-8">
-        <h2 className="text-red-600 text-lg flex items-center gap-2">
-          <span className="w-8 h-px bg-red-600"></span>
-          Leadership Team
-        </h2>
+      <div className="flex ">
+
+        <Heading heading="Leadership team" route="/about" />
       </div>
 
       {/* Description */}

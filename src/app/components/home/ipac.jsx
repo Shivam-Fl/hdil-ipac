@@ -1,16 +1,8 @@
 const IPAC = () => {
     return (
         <>
-            <div className="flex items-center space-x-2 mt-4 mb-2 max-w-5xl mx-auto">
-                <div className=" w-10 md:w-16 border-t-2 border-[#3D9AD6] pointer-events-none"></div>
-                <a
-                    href="/about"
-                    className="text-[#3D9AD6] z-30  hover:text-blue-800 text-lg md:text-2xl font-medium transition duration-300"
-                >
-                    About Us
-                </a>
-            </div>
-            <div className="relative w-full  bg-[#075F98]">
+            
+            <div className="relative w-full  bg-[#B7472A]">
 
                 {/* Background Image */}
                 <div className="max-w-5xl relative mx-auto flex items-center justify-center">
