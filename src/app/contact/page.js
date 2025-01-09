@@ -8,7 +8,7 @@ const ContactPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section with Logo */}
-      <div className="bg-navy-900 bg-[#00205B] text-white relative max-w-5xl mx-auto my-5 rounded-xl max-lg:m-4">
+      <div className=" bg-navy-900 bg-[#EB9788] text-white relative max-w-5xl mx-auto my-5 rounded-xl max-lg:m-4">
         <div className="max-w-7xl mx-auto px-4 pt-8 pb-20">
           <h1 className="text-3xl font-bold text-center mb-2 montserrat-subrayada-bold">IPCA</h1>
           <div className="text-center sm:text-left ml-4">
@@ -21,11 +21,11 @@ const ContactPage = () => {
         </div>
         
         {/* Billboard Image */}
-        <div className="absolute right-20 top-0">
+        <div className="absolute right-20 top-10 max-md:hidden ">
           <img 
-            src="/api/placeholder/200/150" 
+            src="/contact.svg" 
             alt="IPCA Billboard" 
-            className="h-48 object-contain"
+            className="h-52 object-contain"
           />
         </div>
         
@@ -33,7 +33,7 @@ const ContactPage = () => {
         <div className="absolute left-1/2 -bottom-12 transform -translate-x-1/2">
           <div className="bg-white rounded-full p-4 shadow-lg">
             <img 
-              src="/api/placeholder/80/80" 
+              src="/ipcalogo.png" 
               alt="IPCA Logo" 
               className="w-16 h-16"
             />

@@ -3,18 +3,24 @@ import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, X, ExternalLink } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
+import axios from "axios";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import Header from "../components/header";
 import Heading from "../components/heading";
+import axiosInstance from "@/utils/axiosInstance";
+
+// Create axios instance with default config
+const api = axiosInstance
 
 const Updates = () => {
   const [activeTab, setActiveTab] = useState("announcement");
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Separate states for each type's pagination
   const [visibleItems, setVisibleItems] = useState({
     announcement: 5,
     news: 3,
@@ -28,49 +34,29 @@ const Updates = () => {
     gallery: [],
   });
 
-  // Simulated API data - replace with actual API call
+  // Fetch data using axios
   useEffect(() => {
     const fetchData = async () => {
-      const mockData = {
-        items: [
-          ...Array(10).fill({
-            type: "announcement",
-            date: "21/12/2024",
-            content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-            image: "https://via.placeholder.com/400x300", // Placeholder image for announcements
-          }),
-          ...Array(9).fill({
-            type: "news",
-            title: "Lorem Ipsum Dolor",
-            content:
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-            image: "https://via.placeholder.com/400", // Placeholder image for news
-          }),
-          ...Array(9).fill({
-            type: "blogs",
-            title: "Lorem Ipsum Dolor",
-            content:
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-            image: "https://via.placeholder.com/400x300", // Placeholder image for blogs
-          }),
-        ],
-        gallery: Array(8).fill({
-          title: "Lorem Ipsum Dolor Sit",
-          image: "/test.svg.svg", // Placeholder image for gallery
-          description:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-        }),
-      };
-
-      // Organize data by type
-      setData({
-        announcement: mockData.items.filter(
-          (item) => item.type === "announcement"
-        ),
-        news: mockData.items.filter((item) => item.type === "news"),
-        blogs: mockData.items.filter((item) => item.type === "blogs"),
-        gallery: mockData.gallery,
-      });
+      try {
+        setLoading(true);
+        const { data: items } = await api.get('/updates');
+        
+        // Organize data by type
+        setData({
+          announcement: items.filter(item => item.type === 'announcement'),
+          news: items.filter(item => item.type === 'news'),
+          blogs: items.filter(item => item.type === 'blogs'),
+          gallery: items.filter(item => item.type === 'gallery'),
+        });
+      } catch (err) {
+        setError(
+          err.response?.data?.message || 
+          err.message || 
+          'Failed to fetch updates'
+        );
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -94,7 +80,7 @@ const Updates = () => {
       {images.map((image, idx) => (
         <img
           key={idx}
-          src={image.image}
+          src={image.imageUrl || '/placeholder.jpg'}
           alt={`Thumbnail ${idx + 1}`}
           className={`w-16 h-16 object-cover cursor-pointer ${
             selected === idx ? "border-2 border-blue-500" : ""
@@ -109,20 +95,35 @@ const Updates = () => {
     const items = data[type].slice(0, visibleItems[type]);
     const hasMore = visibleItems[type] < data[type].length;
 
+    if (loading) {
+      return <div className="text-center">Loading...</div>;
+    }
+
+    if (error) {
+      return <div className="text-red-500 text-center">{error}</div>;
+    }
+
     return (
       <div className="space-y-4">
         {items.map((item, index) => (
-          <div key={index} className="flex gap-4 bg-white p-4 rounded shadow">
-            {item.image && type !== "announcement" && (
+          <div key={item._id || index} className="flex gap-4 bg-white p-4 rounded shadow">
+            {item.imageUrl && type !== "announcement" && (
               <img
-                src={item.image}
+                src={item.imageUrl}
+                alt={item.title}
+                className="w-24 h-24 object-cover rounded"
+              />
+            )}
+            {!item.imageUrl && type !== "announcement" && (
+              <img
+                src="https://via.placeholder.com/150"
                 alt={item.title}
                 className="w-24 h-24 object-cover rounded"
               />
             )}
             {type === "announcement" && (
               <img
-                src="/announcment.svg"
+                src="/announcement.svg"
                 alt={item.title}
                 className="w-24 h-24 object-cover rounded"
               />
@@ -132,10 +133,19 @@ const Updates = () => {
                 {item.title ? (
                   <h3 className="font-bold">{item.title}</h3>
                 ) : (
-                  <div className="font-semibold">{item.date}</div>
+                  <div className="font-semibold">
+                    {new Date(item.createdAt).toLocaleDateString()}
+                  </div>
                 )}
-                {type === "blogs" && (
-                  <ExternalLink className="w-5 h-5 text-gray-500" />
+                {type === "blogs" && item.redirectUrl && (
+                  <a 
+                    href={item.redirectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-blue-500"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                  </a>
                 )}
               </div>
               <p className="text-gray-600">{item.content}</p>
@@ -156,10 +166,8 @@ const Updates = () => {
 
   return (
     <>
-      {/* Header */}
       <Header description="Transforms visions into reality, blending innovation with collaborative growth" />
       <div className="max-w-5xl mx-auto p-4">
-        {/* Navigation Tabs */}
         <div className="flex gap-2 mb-6">
           {tabs.map((tab) => (
             <button
@@ -176,7 +184,6 @@ const Updates = () => {
           ))}
         </div>
 
-        {/* Dynamic Content Section */}
         <ContentSection type={activeTab} />
 
         {/* Gallery Section */}
@@ -217,7 +224,7 @@ const Updates = () => {
             className="relative mt-4"
           >
             {data.gallery.map((image, index) => (
-              <SwiperSlide key={index}>
+              <SwiperSlide key={image._id || index}>
                 <div
                   className="relative group cursor-pointer"
                   onClick={() => {
@@ -226,7 +233,7 @@ const Updates = () => {
                   }}
                 >
                   <img
-                    src={image.image}
+                    src={image.imageUrl || '/placeholder.jpg'}
                     alt={image.title}
                     className="w-full h-64 object-cover rounded"
                   />
@@ -242,7 +249,7 @@ const Updates = () => {
         </div>
 
         {/* Modal */}
-        {showModal && (
+        {showModal && data.gallery[selectedImage] && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg max-w-4xl w-full">
               <div className="p-4 flex justify-end">
@@ -261,15 +268,15 @@ const Updates = () => {
                 />
                 <div className="flex-1">
                   <img
-                    src={data.gallery[selectedImage]?.image}
-                    alt={data.gallery[selectedImage]?.title}
+                    src={data.gallery[selectedImage].imageUrl || '/placeholder.jpg'}
+                    alt={data.gallery[selectedImage].title}
                     className="rounded mb-4"
                   />
                   <h3 className="text-xl font-bold">
-                    {data.gallery[selectedImage]?.title}
+                    {data.gallery[selectedImage].title}
                   </h3>
                   <p className="text-gray-600 mt-2">
-                    {data.gallery[selectedImage]?.description}
+                    {data.gallery[selectedImage].content}
                   </p>
                 </div>
               </div>
