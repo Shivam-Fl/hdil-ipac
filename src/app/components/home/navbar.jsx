@@ -1,47 +1,77 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { Mountain } from 'lucide-react'
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import Link from "next/link";
+import { Mountain } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [authToken, setAuthToken] = React.useState(null);
+  const [role, setRole] = React.useState("");
+
+  React.useEffect(() => {
+    const token = localStorage.getItem("IPACAuthToken");
+    const userRole = localStorage.getItem("IPACRole");
+    setAuthToken(token);
+    setRole(userRole);
+  }, []);
+
+  const getDashboardPath = () => {
+    if (role === "admin") return "/admin";
+    if (role === "member") return "/dashboard";
+    return "/login"; // Fallback in case the role is undefined or invalid
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white">
-      <div className="container  max-w-7xl mx-auto flex h-16 items-center px-4">
+      <div className="container max-w-7xl mx-auto flex h-16 items-center px-4">
         <Link href="/" className="flex items-center space-x-2">
           <Mountain className="h-6 w-6 text-red-600" />
           <span className="text-xl font-bold text-red-600">IRCA</span>
         </Link>
-        
+
         {/* Desktop Navigation */}
         <nav className="hidden md:flex md:flex-1 md:items-center md:justify-center">
           <ul className="flex space-x-8">
             <li>
-              <Link href="/" className="text-sm font-medium transition-colors hover:text-red-600">
+              <Link
+                href="/"
+                className="text-sm font-medium transition-colors hover:text-red-600"
+              >
                 Home
               </Link>
             </li>
             <li>
-              <Link href="/about" className="text-sm font-medium transition-colors hover:text-red-600">
+              <Link
+                href="/about"
+                className="text-sm font-medium transition-colors hover:text-red-600"
+              >
                 About
               </Link>
             </li>
             <li>
-              <Link href="/updates" className="text-sm font-medium transition-colors hover:text-red-600">
+              <Link
+                href="/updates"
+                className="text-sm font-medium transition-colors hover:text-red-600"
+              >
                 Updates
               </Link>
             </li>
             <li>
-              <Link href="/directory" className="text-sm font-medium transition-colors hover:text-red-600">
+              <Link
+                href="/directory"
+                className="text-sm font-medium transition-colors hover:text-red-600"
+              >
                 Business Directory
               </Link>
             </li>
             <li>
-              <Link href="/helpline" className="text-sm font-medium transition-colors hover:text-red-600">
+              <Link
+                href="/helpline"
+                className="text-sm font-medium transition-colors hover:text-red-600"
+              >
                 Helpline
               </Link>
             </li>
@@ -70,7 +100,9 @@ export default function Navbar() {
             </Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/login">Log In</Link>
+            <Link href={authToken ? getDashboardPath() : "/login"}>
+              {authToken ? "Dashboard" : "Log In"}
+            </Link>
           </Button>
         </div>
 
@@ -139,8 +171,11 @@ export default function Navbar() {
                 Contact Us
               </Link>
               <Button className="w-full" variant="outline" asChild>
-                <Link href="/login" onClick={() => setIsOpen(false)}>
-                  Log In
+                <Link
+                  href={authToken ? getDashboardPath() : "/login"}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {authToken ? "Dashboard" : "Log In"}
                 </Link>
               </Button>
             </nav>
@@ -148,6 +183,5 @@ export default function Navbar() {
         </Sheet>
       </div>
     </header>
-  )
+  );
 }
-

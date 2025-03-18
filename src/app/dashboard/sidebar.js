@@ -2,10 +2,10 @@ import Link from "next/link";
 
 const DashboardLayout = ({ children }) => {
   const menuItems = [
-    { icon: "🔄", label: "Engagement", href: "/engagement" },
-    { icon: "📢", label: "Notice", href: "/notice" },
-    { icon: "🔧", label: "Workshop", href: "/workshop" },
-    { icon: "📚", label: "Business Directory", href: "/directory" }
+    { icon: "🔄", label: "Engagement", href: "/dashboard" },
+    { icon: "📢", label: "Notice", href: "/dashboard/notice" },
+    { icon: "🔧", label: "Workshop", href: "/dashboard/workshop" },
+    { icon: "📚", label: "Business Directory", href: "/dashboard/directory" }
   ];
 
   return (

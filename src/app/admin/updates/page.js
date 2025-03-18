@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import axios from "../../../utils/axiosInstance";
 import {
@@ -15,7 +15,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; 
 
-
 const UpdatesManager = () => {
   const [activeTab, setActiveTab] = useState("news");
   const [updates, setUpdates] = useState([]);
@@ -24,6 +23,7 @@ const UpdatesManager = () => {
     title: "",
     content: "",
     redirectUrl: "",
+    date: "",
     imageFile: null,
   });
   const [isEditMode, setIsEditMode] = useState(false);
@@ -36,20 +36,27 @@ const UpdatesManager = () => {
   const API_URL = "/updates";
 
   // Fetch Updates
-  const fetchUpdates = async () => {
-    try {
-      const response = await axios.get(API_URL);
-      setUpdates(response.data.filter((item) => item.type === activeTab));
-    } catch (err) {
-      console.error("Error fetching updates:", err);
-      toast.error("Failed to fetch updates. Please try again later.");
+const fetchUpdates = async () => {
+  try {
+    let endpoint = API_URL;
+    
+    // Use the privateUpdates endpoint for notices and workshop tabs
+    if (activeTab === "notices" || activeTab === "workshop") {
+      endpoint = "/updates/privateupdates";
     }
-  };
+    
+    const response = await axios.get(endpoint);
+    setUpdates(response.data.filter((item) => item.type === activeTab));
+  } catch (err) {
+    console.error("Error fetching updates:", err);
+    toast.error("Failed to fetch updates. Please try again later.");
+  }
+};
 
   // Handle Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { title, content, redirectUrl, imageFile } = formData;
+    const { title, content, redirectUrl, imageFile, date } = formData;
     const type = activeTab;
 
     if (isSubmitting) return; // Prevent submitting if already submitting
@@ -61,6 +68,7 @@ const UpdatesManager = () => {
       form.append("title", title);
       form.append("content", content);
       if (redirectUrl) form.append("redirectUrl", redirectUrl);
+      if (date) form.append("date", date);
       if (imageFile) form.append("imageFile", imageFile);
 
       const config = { headers: { "Content-Type": "multipart/form-data" } };
@@ -78,6 +86,7 @@ const UpdatesManager = () => {
         title: "",
         content: "",
         redirectUrl: "",
+        date: "",
         imageFile: null,
       });
       setIsDialogOpen(false);
@@ -134,6 +143,7 @@ const UpdatesManager = () => {
       title: update.title,
       content: update.content,
       redirectUrl: update.redirectUrl || "",
+      date: update.date || "",
       imageFile: null,
     });
     setIsDialogOpen(true);
@@ -161,6 +171,8 @@ const UpdatesManager = () => {
           <TabsTrigger value="blogs">Blogs</TabsTrigger>
           <TabsTrigger value="announcement">Announcements</TabsTrigger>
           <TabsTrigger value="gallery">Gallery</TabsTrigger>
+          <TabsTrigger value="notices">Notices</TabsTrigger>
+          <TabsTrigger value="workshop">Workshops</TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab}>
@@ -174,6 +186,7 @@ const UpdatesManager = () => {
                 <div className="flex-1">
                   <h3 className="text-xl font-bold">{update.title}</h3>
                   <p>{update.content}</p>
+                  {update.date && <p><strong>Date:</strong> {update.date}</p>}
                 </div>
                 <div className="flex flex-col gap-2">
                   <Button onClick={() => handleEdit(update)} size="sm">
@@ -215,12 +228,22 @@ const UpdatesManager = () => {
               required
               className="mb-4"
             />
-            {activeTab === "blogs" && (
+            {activeTab === "blogs" || activeTab === "workshop" ? (
               <Input
                 name="redirectUrl"
                 placeholder="Redirect URL"
                 value={formData.redirectUrl}
                 onChange={handleChange}
+                className="mb-4"
+              />
+            ) : null}
+            {activeTab === "workshop" && (
+              <Input
+                name="date"
+                type="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
                 className="mb-4"
               />
             )}

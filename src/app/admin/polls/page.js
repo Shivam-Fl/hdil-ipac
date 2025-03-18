@@ -27,7 +27,7 @@ const PollsPage = () => {
   useEffect(() => {
     const fetchPolls = async () => {
       try {
-        const response = await axios.get(API_URL);
+        const response = await axios.get(`${API_URL}/admin`);
         setPolls(response.data);
       } catch (error) {
         toast.error("Error fetching polls.");

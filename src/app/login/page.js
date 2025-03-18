@@ -16,8 +16,8 @@ const Login = () => {
     try {
       const res = await axios.post("/auth/login", { email, password });
       // Save token and role
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.role);
+      localStorage.setItem("IPACAuthToken", res.data.token);
+      localStorage.setItem("IPACRole", res.data.role);
   
       // Redirect based on role
       if (res.data.role === "admin") {

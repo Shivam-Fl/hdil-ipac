@@ -11,6 +11,7 @@ import Heading from '../components/heading';
 import industries from './data';
 import Header from '../components/header';
 
+
 const BusinessDirectory = () => {
   const [selectedIndustry, setSelectedIndustry] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -238,26 +239,59 @@ const BusinessDirectory = () => {
       {!selectedIndustry ? (
         <>
         <Header description={"United Diverse Industries to Propel India's Growth and Prosperity"} />
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 mt-20">
-            {industries.map((industry, idx) => (
-              <div
-                key={idx}
-                onClick={() => setSelectedIndustry(industry)}
-                className="group cursor-pointer"
-              >
-                <div className="aspect-square rounded-lg overflow-hidden mb-3">
+
+
+        <div className="max-w-7xl mx-auto p-4 sm:p-6">
+        <div className="border-b pb-4 mb-6">
+        <Heading heading="Business directory" route="/directory" />
+          <div className="mt-4 w-full max-w-md ml-auto">
+            <div className="relative">
+              <input 
+                type="text" 
+                placeholder="Search" 
+                className="w-full px-4 py-2 rounded-full border border-gray-300 focus:outline-none"
+              />
+              <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        </div>
+        <div  className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {industries.map((industry, idx) => (
+            <div onClick={()=>{setSelectedIndustry(industry)}} key={idx} className="h-full bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md hover:scale-105 transition-shadow">
+              <div className="flex h-full">
+                <div className="w-1/3">
                   <img
                     src={industry.images[0]}
                     alt={industry.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover"
                   />
                 </div>
-                <h3 className="font-medium group-hover:text-red-500 transition-colors">
-                  {industry.name}
-                </h3>
+                <div className="w-2/3 p-4">
+                  <h3 className="text-xl font-bold">{industry.name}</h3>
+                  <p className="text-gray-600 text-sm mt-1 line-clamp-3">
+                    {industry.description}
+                  </p>
+                  <div className="mt-3">
+                    <p className="font-medium text-sm">Products:</p>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {industry.products.slice(0, 4).map((product, index) => (
+                        <span key={index} className="text-xs text-gray-600">
+                          {product.name}{index < Math.min(industry.products.length - 1, 3) ? ", " : ""}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
+        </div>
         </>
       ) : (
         <DetailView

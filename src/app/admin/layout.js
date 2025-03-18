@@ -1,6 +1,6 @@
 "use client"
 import React from 'react';
-import { Home, Building2, NewspaperIcon, PhoneCall, Users, PieChart } from 'lucide-react';
+import { Home, Building2, NewspaperIcon, PhoneCall, Users, PieChart, MessageCircle } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,8 +14,9 @@ const Layout = ({ children }) => {
     { icon: NewspaperIcon, label: 'Updates', href: '/admin/updates' },
     { icon: PhoneCall, label: 'Emergency Contacts', href: '/admin/emergency' },
     { icon: Users, label: 'Members', href: '/admin/members' },
-    { icon: PieChart, label: 'Polls', href: '/admin/polls' }
-  ];
+    { icon: PieChart, label: 'Polls', href: '/admin/polls' },
+    { icon: MessageCircle, label: 'Feedback', href: '/admin/feedback' } // New Feedback button
+];
 
   return (
     <div className="min-h-screen bg-gray-100">

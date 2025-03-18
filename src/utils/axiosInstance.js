@@ -6,7 +6,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // Replace with your token key
+    const token = localStorage.getItem("IPACAuthToken"); // Replace with your token key
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

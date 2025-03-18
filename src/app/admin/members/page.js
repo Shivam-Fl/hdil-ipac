@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -19,12 +19,14 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import axios from '@/utils/axiosInstance'; // Import your axios instance
+import axios from '@/utils/axiosInstance';
 
 const AccountsPage = () => {
   const [accounts, setAccounts] = useState([]);
   const [newAccount, setNewAccount] = useState({
-    username: '',
+    name: '',
+    galaNumber: '',
+    builderNumber: '',
     email: '',
     company: '',
     password: ''
@@ -34,32 +36,32 @@ const AccountsPage = () => {
     try {
       const res = await axios.get('/auth/users');
       const filteredAccounts = res.data.filter(account => account.role !== 'admin'); // Filter out admin accounts
-  
+
       // Fetch industries and map them by owner ID
       const industriesRes = await axios.get('/industries');
       const industries = industriesRes.data;
-  
+
       const accountsWithIndustry = filteredAccounts.map(account => {
         const userIndustry = industries.find(industry => industry.owner === account._id); // Match owner ID with user ID
         return { ...account, industry: userIndustry };
       });
-  
+
       setAccounts(accountsWithIndustry);
     } catch (error) {
       console.error('Failed to fetch accounts', error);
     }
   };
-  
-  
+
   const createAccount = async () => {
     try {
-      const res = await axios.post('/auth/register', newAccount, {
+      const username = `${newAccount.name}-${newAccount.galaNumber}-${newAccount.builderNumber}`;
+      await axios.post('/auth/register', { ...newAccount, username }, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
       fetchAccounts(); // Refresh the accounts list after creation
-      setNewAccount({ username: '', email: '', company: '', password: '' }); // Clear form
+      setNewAccount({ name: '', galaNumber: '', builderNumber: '', email: '', company: '', password: '' }); // Clear form
     } catch (error) {
       console.error('Failed to create account', error);
     }
@@ -67,7 +69,7 @@ const AccountsPage = () => {
 
   const deleteAccount = async (id) => {
     try {
-      const res = await axios.delete(`/auth/users/${id}`, {
+      await axios.delete(`/auth/users/${id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
@@ -75,6 +77,21 @@ const AccountsPage = () => {
       fetchAccounts(); // Refresh the accounts list after deletion
     } catch (error) {
       console.error('Failed to delete account', error);
+    }
+  };
+
+  const toggleAccountStatus = async (id, currentStatus) => {
+    try {
+      await axios.put(`/auth/users/${id}/toggle-status`, {
+        status: currentStatus === 'active' ? 'inactive' : 'active'
+      }, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      fetchAccounts(); // Refresh the accounts list after toggling status
+    } catch (error) {
+      console.error('Failed to toggle account status', error);
     }
   };
 
@@ -103,8 +120,26 @@ const AccountsPage = () => {
                 <Input 
                   id="name" 
                   placeholder="Enter full name" 
-                  value={newAccount.username}
-                  onChange={(e) => setNewAccount({ ...newAccount, username: e.target.value })}
+                  value={newAccount.name}
+                  onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="galaNumber">Gala Number</Label>
+                <Input 
+                  id="galaNumber" 
+                  placeholder="Enter gala number" 
+                  value={newAccount.galaNumber}
+                  onChange={(e) => setNewAccount({ ...newAccount, galaNumber: e.target.value })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="builderNumber">Builder Number</Label>
+                <Input 
+                  id="builderNumber" 
+                  placeholder="Enter builder number" 
+                  value={newAccount.builderNumber}
+                  onChange={(e) => setNewAccount({ ...newAccount, builderNumber: e.target.value })}
                 />
               </div>
               <div className="grid gap-2">
@@ -148,24 +183,36 @@ const AccountsPage = () => {
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Company</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {accounts.map((account) => (
             <TableRow key={account._id}>
-            <TableCell className="font-medium">{account.username}</TableCell>
-            <TableCell>{account.email}</TableCell>
-            <TableCell>{account.industry ? account.industry.name : 'No Industry'}</TableCell> {/* Display industry name */}
-            <TableCell>
-              <div className="flex space-x-2">
-                <Button variant="outline" size="icon" onClick={() => deleteAccount(account._id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
-          
+              <TableCell className="font-medium">{account.username}</TableCell>
+              <TableCell>{account.email}</TableCell>
+              <TableCell>{account.industry ? account.industry.name : 'No Industry'}</TableCell>
+              <TableCell>{account.status}</TableCell>
+              <TableCell>
+                <div className="flex space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => toggleAccountStatus(account._id, account.status)}
+                  >
+                    {account.status === 'active' ? <ToggleRight className="h-4 w-4 text-green-500" /> : <ToggleLeft className="h-4 w-4 text-red-400" />}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => deleteAccount(account._id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
           ))}
         </TableBody>
       </Table>
