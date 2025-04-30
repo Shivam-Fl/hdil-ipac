@@ -32,13 +32,13 @@ const WorkshopCard = ({
         {date && (
           <div className="flex items-center text-gray-600">
             <Calendar className="w-4 h-4 mr-2" />
-            <span>Workshop date: {date}</span>
+            <span>Workshop date: {formatDate(date)}</span>
           </div>
         )}
-        <div className="flex items-center text-gray-600">
+        {/* <div className="flex items-center text-gray-600">
           <Users className="w-4 h-4 mr-2" />
           <span>{seatsAvailable} seats available</span>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex justify-end space-x-2">
@@ -47,16 +47,16 @@ const WorkshopCard = ({
             href={redirectUrl}
             target="_blank" 
             rel="noopener noreferrer"
-            className="px-4 py-1 border rounded-md flex items-center space-x-1 hover:bg-gray-50"
+            className="px-4 py-1 border rounded-md flex items-center space-x-1  bg-red-200 text-red-600 hover:bg-red-300"
           >
-            <span>Details</span>
-          </a>
-        )}
-        <button 
-          className="px-4 py-1 rounded-md bg-red-200 text-red-600 hover:bg-red-300"
+        <span
+          className="px-4 py-1 "
         >
           Register
-        </button>
+        </span>
+          </a>
+        )}
+
       </div>
     </CardContent>
   </Card>

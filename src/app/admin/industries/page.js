@@ -62,7 +62,7 @@ const IndustriesPage = () => {
     fetchIndustries();
   }, []);
 
-  const filteredIndustries = industries.filter((industry) =>
+  const filteredIndustries = Array.isArray(industries)?industries:[].filter((industry) =>
     industry.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 

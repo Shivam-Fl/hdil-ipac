@@ -5,23 +5,24 @@ import { Card, CardContent } from '@/components/ui/card';
 import axios from '@/utils/axiosInstance'; // Adjust path as needed
 import { formatDate } from '@/utils/dateUtils'; // Optional, create if needed
 
-const NoticeCard = ({ createdAt, title, content, redirectUrl }) => (
+const NoticeCard = ({ createdAt, title, content, fileUrl, downloadFile }) => (
   <Card className="mb-4">
     <CardContent className="p-4">
       <div className="text-red-500 text-sm mb-1">Posted on: {formatDate(createdAt)}</div>
       <h3 className="text-lg font-bold mb-2 break-words">{title}</h3>
       <p className="text-gray-600 mb-4 text-sm sm:text-base break-words">{content}</p>
-      {redirectUrl && (
-        <a 
-          href={redirectUrl} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="flex items-center space-x-2 border rounded-md px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base text-gray-700 hover:bg-gray-50 transition-colors"
-        >
-          <Download className="w-4 h-4" />
-          <span>Attachment</span>
-        </a>
-      )}
+
+      {fileUrl && (
+  <button
+    onClick={() => downloadFile(fileUrl, `attachment-${title}`)}
+    className="flex items-center space-x-2 border rounded-md px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base text-gray-700 hover:bg-gray-50 transition-colors"
+  >
+    <Download className="w-4 h-4" />
+    <span>Download Attachment</span>
+  </button>
+)}
+
+
     </CardContent>
   </Card>
 );
@@ -30,6 +31,17 @@ const NoticeListing = () => {
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const downloadFile = async (url, fileName) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+  
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName || 'downloaded-file';
+    link.click();
+    URL.revokeObjectURL(link.href); // Clean up
+  };
+  
 
   useEffect(() => {
     const fetchNotices = async () => {
@@ -88,7 +100,8 @@ const NoticeListing = () => {
               title={notice.title}
               content={notice.content}
               createdAt={notice.createdAt}
-              redirectUrl={notice.redirectUrl}
+              fileUrl = {notice.imageUrl}
+              downloadFile={downloadFile}
             />
           ))}
         </div>

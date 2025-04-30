@@ -34,23 +34,30 @@ const AccountsPage = () => {
 
   const fetchAccounts = async () => {
     try {
+      // Fetch user accounts
       const res = await axios.get('/auth/users');
       const filteredAccounts = res.data.filter(account => account.role !== 'admin'); // Filter out admin accounts
-
-      // Fetch industries and map them by owner ID
+  
+      // Fetch industries
       const industriesRes = await axios.get('/industries');
-      const industries = industriesRes.data;
-
+      console.log('Industries API Response:', industriesRes.data); // Log the industries data
+  
+      // Ensure industries is an array
+      const industries = Array.isArray(industriesRes.data) ? industriesRes.data : [];
+  
+      // Map accounts with their associated industry, if any
       const accountsWithIndustry = filteredAccounts.map(account => {
-        const userIndustry = industries.find(industry => industry.owner === account._id); // Match owner ID with user ID
+        const userIndustry = industries.find(industry => industry.owner._id === account._id) || null; // Assign null if no match
         return { ...account, industry: userIndustry };
       });
-
-      setAccounts(accountsWithIndustry);
+  
+      setAccounts(accountsWithIndustry); // Update state with accounts
     } catch (error) {
       console.error('Failed to fetch accounts', error);
     }
   };
+  
+  
 
   const createAccount = async () => {
     try {

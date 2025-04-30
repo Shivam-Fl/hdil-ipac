@@ -56,7 +56,7 @@ const DashboardLayout = ({ children }) => {
           </header>
 
           {/* Main Content */}
-          <main className="flex-1 p-4 lg:p-8 bg-gray-100 pb-16 lg:pb-8">
+          <main className="flex-1 p-4  bg-gray-100 pb-16 lg:pb-8">
             {children}
           </main>
         </div>
